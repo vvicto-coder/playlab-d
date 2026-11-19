@@ -1,4 +1,4 @@
-/* B안 브랜드관(패스) — 해당 패스 구독 시 볼 수 있는 작품 모음. 브랜드·작품·이벤트는 모두 가상. 교육용 비영리 테스트 페이지 */
+/* D안 브랜드관(패스) — 해당 패스 구독 시 볼 수 있는 작품 모음. 브랜드·작품·이벤트는 모두 가상. 교육용 비영리 테스트 페이지 */
 (async function () {
   App.mountShell();
   const L = App.Logger, esc = App.esc, root = document.getElementById("app");
@@ -7,7 +7,7 @@
   const pid = new URLSearchParams(location.search).get("p") || "star";
   const p = App.pass(pid);
   if (!p) { root.innerHTML = '<div class="page"><p>브랜드관을 찾을 수 없어요.</p><a class="btn" href="index.html">홈으로</a></div>'; return; }
-  document.title = `${p.brand} 브랜드관 · PLAYLAB B안`;
+  document.title = `${p.brand} 브랜드관 · PLAYLAB D안`;
   L.log("pass_hub_view", { value: pid, section: "brand" });
 
   const all = App.data.contents;

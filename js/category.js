@@ -1,4 +1,4 @@
-/* B안 카테고리 페이지 — 상단 '카테고리' 목록에서 세부 장르를 누르면 열리는 작품 모음(category.html?c=로맨스).
+/* D안 카테고리 페이지 — 상단 '카테고리' 목록에서 세부 장르를 누르면 열리는 작품 모음(category.html?c=로맨스).
    가상 데이터에는 제작 국가가 없어서, 국가별 카테고리는 아래 REGION 규칙(패스 브랜드 → 국가, 그 외는 작품 ID 고정 배정)으로 나눈다.
    교육용 비영리 테스트 페이지 */
 (async function () {
@@ -31,7 +31,7 @@
     "로맨스": genre("로맨스", "로맨틱 코미디"), "어드벤처": genre("어드벤처"),
   };
   const rule = RULES[cat];
-  document.title = `${cat || "카테고리"} · PLAYLAB B안`;
+  document.title = `${cat || "카테고리"} · PLAYLAB D안`;
   L.log("page_view", { section: "category", value: cat });
   if (!rule) { root.innerHTML = `<div class="page"><p>‘${esc(cat)}’ 카테고리를 찾을 수 없어요.</p><p><a class="btn" href="index.html">홈으로</a></p></div>`; return; }
 

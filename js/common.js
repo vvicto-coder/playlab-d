@@ -99,7 +99,7 @@
     if (c.badge === "PLAYLAB 영화") return '<span class="tag">▶ 영화</span>';
     return "";                                              // '신규' 배지는 삭제(카드·미리보기 공통)
   };
-  /* 지금 바로 재생 가능한가(멤버십 포함 & 패스 아님) = B안 메인 피드의 '무료 콘텐츠' */
+  /* 지금 바로 재생 가능한가(멤버십 포함 & 패스 아님) = D안 메인 피드의 '무료 콘텐츠' */
   App.canPlay = (c) => c.access === "subscription" && !c.partnerPass;
   App.isFree = App.canPlay;
   App.isOriginal = (c) => c.badge === "PLAYLAB 시리즈" || c.badge === "PLAYLAB 영화";

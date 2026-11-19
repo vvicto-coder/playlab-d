@@ -1,4 +1,4 @@
-/* B안 스포츠 탭 — 가상 리그·팀·경기. 교육용 비영리 테스트 페이지 */
+/* D안 스포츠 탭 — 가상 리그·팀·경기. 교육용 비영리 테스트 페이지 */
 (async function () {
   App.mountShell();
   const L = App.Logger, esc = App.esc;

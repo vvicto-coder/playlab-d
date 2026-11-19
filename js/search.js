@@ -100,7 +100,7 @@
   });
 
   L.log("search_open", { section: "search" });
-  document.title = "검색 · PLAYLAB B안";
+  document.title = "검색 · PLAYLAB D안";
   draw();
   inp.focus();
   if (q) armSubmit();

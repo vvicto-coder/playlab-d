@@ -1,4 +1,4 @@
-/* B안 리그 페이지 — 스포츠 탭의 리그 아이콘에서 진입(league.html?id=○○). 홈 · 동영상 · 경기 일정 · 순위.
+/* D안 리그 페이지 — 스포츠 탭의 리그 아이콘에서 진입(league.html?id=○○). 홈 · 동영상 · 경기 일정 · 순위.
    리그·팀·경기·순위·점수는 모두 가상(교육용 비영리 테스트 데이터) */
 (async function () {
   App.mountShell();
@@ -20,7 +20,7 @@
   const matches = S.matches.filter((m) => m.league === lg.id).sort((a, b) => a.day - b.day);
   const vids = S.videos.filter((v) => v.league === lg.id);
   const st = { tab: ["home", "video", "sched", "rank"].includes(q.get("t")) ? q.get("t") : "home", status: "upcoming", schedF: "all" };
-  document.title = `${lg.name} · PLAYLAB B안`;
+  document.title = `${lg.name} · PLAYLAB D안`;
   L.log("page_view", { section: "league", value: lg.id });
 
   const tags = (a, b) => `<span class="lg-tags"><i class="pass">패스</i>${b ? `<i>${esc(b)}</i>` : ""}</span>`;

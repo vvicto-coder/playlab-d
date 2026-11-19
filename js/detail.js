@@ -1,4 +1,4 @@
-/* B안 상세/재생 — 다크 테마. 시리즈: 에피소드·리뷰·관련영상·추천 콘텐츠 / 영화: 리뷰·추천 콘텐츠.
+/* D안 상세/재생 — 다크 테마. 시리즈: 에피소드·리뷰·관련영상·추천 콘텐츠 / 영화: 리뷰·추천 콘텐츠.
    교육용 비영리 테스트 페이지 (리뷰·영상·인물은 모두 가상) */
 (async function () {
   App.mountShell();
@@ -11,7 +11,7 @@
   const c = App.byId[params.get("id")];
   if (!c) { root.innerHTML = '<div class="page"><p>작품을 찾을 수 없어요.</p><p><a class="btn" href="index.html">홈으로</a></p></div>'; return; }
 
-  document.title = `${c.title} · PLAYLAB B안`;
+  document.title = `${c.title} · PLAYLAB D안`;
   L.log("detail_view", { target_id: c.id });
 
   const isMovie = c.format === "movie";
