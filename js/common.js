@@ -6,6 +6,36 @@
   /* 내부 테스트 표시: 주소 뒤에 ?internal=1 을 붙여 접속하면 이 브라우저를 내부 트래픽으로 표시(?internal=0 으로 해제). GA4 데이터 필터로 제외하기 위한 용도 */
   try { const iq = new URLSearchParams(location.search).get("internal"); if (iq === "1") localStorage.setItem("ab_internal", "1"); else if (iq === "0") localStorage.removeItem("ab_internal"); } catch (e) {}
   const INTERNAL = (() => { try { return localStorage.getItem("ab_internal") === "1"; } catch (e) { return false; } })();
+  /* [C·D 전용] 과제·참가자 코드 — make_playlab_cd.sh 가 common.js 에 끼워 넣는다(A/B에는 없음).
+     링크 예: https://vvicto-coder.github.io/playlab-c/?task=1&pid=P01
+     - task 또는 pid 값이 이전과 달라지면(새 과제·새 참가자) 이전 과제가 남긴 찜·관심사·시청 기록 등
+       화면에 영향을 주는 저장 값과 탭 세션 값(첫 재생 시간 기준점 등)을 비운다. 내부 표시(ab_internal)·브라우저 로그는 유지.
+     - 참가자가 바뀌면 동의도 다시 받는다.
+     - 값은 이 브라우저에 기억되어 사이트 안에서 이동해도 유지되고, 모든 GA4 이벤트에 task·participant 로 붙는다. */
+  const CODE_RE = /^[A-Za-z0-9_-]{1,20}$/;
+  try {
+    const q = new URLSearchParams(location.search), t = q.get("task"), pc = q.get("pid");
+    const newTask = !!(t && CODE_RE.test(t) && t !== localStorage.getItem("cd_task"));
+    const newPerson = !!(pc && CODE_RE.test(pc) && pc !== localStorage.getItem("cd_participant"));
+    if (newTask || newPerson) {
+      const RESET = newPerson
+        ? /^((behav|interest|wish_sports|wish|notify|benefit_noti|reviews|consent_ga|consent)_[CD]|sports_intro_skip_until)$/
+        : /^((behav|interest|wish_sports|wish|notify|benefit_noti|reviews)_[CD]|sports_intro_skip_until)$/;
+      Object.keys(localStorage).forEach((k) => { if (RESET.test(k)) localStorage.removeItem(k); });
+      try { sessionStorage.clear(); } catch (e) {}
+      if (t && CODE_RE.test(t)) localStorage.setItem("cd_task", t);
+      if (newPerson) { localStorage.setItem("cd_participant", pc); if (!(t && CODE_RE.test(t))) localStorage.removeItem("cd_task"); }
+    }
+  } catch (e) {}
+  const TASK_P = (() => {
+    const o = {};
+    try {
+      const t = localStorage.getItem("cd_task"), pc = localStorage.getItem("cd_participant");
+      if (t) o.task = t;
+      if (pc) o.participant = pc;
+    } catch (e) {}
+    return o;
+  })();
   const LS = {
     get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
     set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
@@ -25,7 +55,7 @@
   const Logger = {
     sid,
     log(event, extra) {
-      const row = Object.assign({ variant: VARIANT, session_id: sid, event, ts: Date.now() }, extra || {});
+      const row = Object.assign({ variant: VARIANT, task: TASK_P.task || "", participant: TASK_P.participant || "", session_id: sid, event, ts: Date.now() }, extra || {});
       if (event === "play_start" && !SS.get("first_play")) {
         SS.set("first_play", "1");
         const t0 = Number(SS.get("home_t0"));
@@ -50,7 +80,7 @@
     rows() { return LS.get("ablog_D", []); },
     csv() {
       const rows = this.rows();
-      const cols = ["variant", "session_id", "ts", "event", "target_id", "section", "value", "ttfp_ms", "ttfp_interest_ms", "first_play"];
+      const cols = ["variant", "task", "participant", "session_id", "ts", "event", "target_id", "section", "value", "ttfp_ms", "ttfp_interest_ms", "first_play"];
       const esc = (v) => (v == null ? "" : '"' + String(v).replace(/"/g, '""') + '"');
       return [cols.join(",")].concat(rows.map((r) => cols.map((c) => esc(r[c])).join(","))).join("\n");
     },
@@ -157,13 +187,13 @@
     const sc = document.createElement("script"); sc.async = true; sc.src = "https://www.googletagmanager.com/gtag/js?id=" + encodeURIComponent(GA_ID);
     document.head.appendChild(sc);
     gtag("js", new Date());
-    gtag("set", "user_properties", { variant: VARIANT });
-    const cfg = { variant: VARIANT, send_page_view: true, allow_google_signals: false, allow_ad_personalization_signals: false };
+    gtag("set", "user_properties", Object.assign({ variant: VARIANT }, TASK_P));
+    const cfg = { ...TASK_P, variant: VARIANT, send_page_view: true, allow_google_signals: false, allow_ad_personalization_signals: false };
     if (INTERNAL) cfg.traffic_type = "internal";   // GA4 '내부 트래픽' 데이터 필터가 이 값을 보고 제외
     gtag("config", GA_ID, cfg);
     App.gaSend = function (event, row) {
       if (event === "hero_slide_change" && row.value === "auto") return;   // 자동 슬라이드 전환은 GA4로 보내지 않음(브라우저 로그 CSV에는 남음)
-      const p = { variant: VARIANT };
+      const p = Object.assign({ variant: VARIANT }, TASK_P);
       if (INTERNAL) p.traffic_type = "internal";
       if (row.target_id) p.target_id = String(row.target_id).slice(0, 100);
       if (row.section) p.section = String(row.section).slice(0, 100);
